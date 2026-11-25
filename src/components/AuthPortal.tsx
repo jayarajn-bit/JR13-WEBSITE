@@ -3,8 +3,7 @@ import { ArrowRight, CheckCircle2, Lock, ShieldCheck, UserPlus } from 'lucide-re
 import { motion } from 'motion/react';
 import { useSavings } from '../context/SavingsContext';
 import { CHALLENGE_PLANS, calculateTotalPlannedInr, formatINR, REGULATORY_DISCLOSURE } from '../lib/savingsEngine';
-
-const HERO_IMG = '/src/assets/images/hero_vault_monolith_1795576641607.jpg';
+import HERO_IMG from '../assets/images/hero_vault_monolith_1795576641607.jpg';
 
 export function AuthPortal({ onNavigateWorkspace }: { onNavigateWorkspace?: () => void }) {
   const { signInWithGoogle, enterDemoSession, registerDemoAccount, actionBusy, statusBanner } =

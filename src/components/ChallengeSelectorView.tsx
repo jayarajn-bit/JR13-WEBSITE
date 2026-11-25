@@ -11,8 +11,7 @@ import {
 } from '../lib/savingsEngine';
 import type { PlanCode } from '../types/savings';
 import type { WorkspaceTab } from './DashboardView';
-
-const GOLD_LEDGER_IMG = '/src/assets/images/card_gold_ledger_1795576641026.jpg';
+import GOLD_LEDGER_IMG from '../assets/images/card_gold_ledger_1795576641026.jpg';
 
 export function ChallengeSelectorView({
   onEnrolled,

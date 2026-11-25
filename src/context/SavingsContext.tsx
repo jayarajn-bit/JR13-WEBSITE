@@ -168,18 +168,39 @@ export function SavingsProvider({ children }: { children: React.ReactNode }) {
   const clearBanner = () => setStatusBanner(null);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (fbUser) => {
-      setFirebaseUser(fbUser);
-      if (fbUser) {
-        setAuthMode('firebase');
-        await bootstrapFirebaseUser(fbUser);
-      } else {
-        setFirestoreAdminRole(null);
-        setFireState(EMPTY_STATE);
+    const unsub = onAuthStateChanged(
+      auth,
+      async (fbUser) => {
+        try {
+          setFirebaseUser(fbUser);
+          if (fbUser) {
+            setAuthMode('firebase');
+            await bootstrapFirebaseUser(fbUser);
+          } else {
+            setFirestoreAdminRole(null);
+            setFireState(EMPTY_STATE);
+            setAuthMode((prev) => (prev === 'demo' ? prev : 'unauthenticated'));
+          }
+        } catch (err) {
+          console.error('Auth initialization warning:', err);
+          setAuthMode((prev) => (prev === 'demo' ? prev : 'unauthenticated'));
+          setStatusBanner({
+            type: 'error',
+            text:
+              err instanceof Error
+                ? err.message
+                : 'Unable to initialize Firebase session. Demo preview remains available.',
+          });
+        } finally {
+          setAuthReady(true);
+        }
+      },
+      (err) => {
+        console.error('Firebase Auth listener warning:', err);
         setAuthMode((prev) => (prev === 'demo' ? prev : 'unauthenticated'));
+        setAuthReady(true);
       }
-      setAuthReady(true);
-    });
+    );
     return () => unsub();
   }, []);
 
