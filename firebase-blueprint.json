@@ -1,0 +1,297 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Core authenticated user account identity.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "format": "email", "maxLength": 254 },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "authProvider": { "type": "string", "enum": ["google", "demo"] },
+        "accountStatus": { "type": "string", "enum": ["ACTIVE", "SUSPENDED"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "displayName", "authProvider", "accountStatus", "createdAt", "updatedAt"]
+    },
+    "Profile": {
+      "title": "Profile",
+      "description": "Individual user profile and INR savings preferences.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "fullName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "phoneMasked": { "type": "string", "maxLength": 20 },
+        "city": { "type": "string", "maxLength": 80 },
+        "state": { "type": "string", "maxLength": 80 },
+        "preferredStartInr": { "type": "number" },
+        "preferredIncrementInr": { "type": "number" },
+        "preferredUpiApp": { "type": "string", "enum": ["GPAY", "PHONEPE", "PAYTM", "BHIM", "AMAZON_PAY", "OTHER_UPI"] },
+        "preferredUpiVpaMasked": { "type": "string", "maxLength": 80 },
+        "kycSimulationStatus": { "type": "string", "enum": ["SIMULATED_PENDING", "SIMULATED_VERIFIED"] },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "fullName", "preferredStartInr", "preferredIncrementInr", "kycSimulationStatus", "updatedAt"]
+    },
+    "Challenge": {
+      "title": "Challenge",
+      "description": "User savings challenge enrollment with progressive INR schedule.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "planCode": { "type": "string", "enum": ["1D_0PCT", "49D_2PCT", "99D_4PCT", "299D_5PCT", "364D_8PCT"] },
+        "durationDays": { "type": "integer" },
+        "illustrativeBonusRate": { "type": "number" },
+        "startAmountInr": { "type": "number" },
+        "incrementAmountInr": { "type": "number" },
+        "totalPlannedInr": { "type": "number" },
+        "totalSavedInr": { "type": "number" },
+        "completedDays": { "type": "integer" },
+        "status": { "type": "string", "enum": ["ACTIVE", "COMPLETED", "FAILED"] },
+        "locked": { "type": "boolean" },
+        "simulatedMode": { "type": "boolean" },
+        "startDate": { "type": "string", "maxLength": 20 },
+        "nextDueDate": { "type": "string", "maxLength": 20 },
+        "failedReason": { "type": "string", "maxLength": 240 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "planCode", "durationDays", "illustrativeBonusRate", "startAmountInr", "incrementAmountInr", "totalPlannedInr", "totalSavedInr", "completedDays", "status", "locked", "simulatedMode", "startDate", "nextDueDate", "createdAt", "updatedAt"]
+    },
+    "DailyContribution": {
+      "title": "DailyContribution",
+      "description": "Single simulated daily contribution record for a challenge day.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "challengeId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "dayNumber": { "type": "integer" },
+        "scheduledDate": { "type": "string", "maxLength": 20 },
+        "amountInr": { "type": "number" },
+        "status": { "type": "string", "enum": ["PAID_SIMULATED", "MISSED"] },
+        "referenceCode": { "type": "string", "maxLength": 64 },
+        "upiApp": { "type": "string", "enum": ["GPAY", "PHONEPE", "PAYTM", "BHIM", "AMAZON_PAY", "OTHER_UPI"] },
+        "upiVpaMasked": { "type": "string", "maxLength": 80 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "challengeId", "dayNumber", "scheduledDate", "amountInr", "status", "referenceCode", "createdAt"]
+    },
+    "Streak": {
+      "title": "Streak",
+      "description": "Daily streak tracking state per challenge.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "challengeId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "currentStreak": { "type": "integer" },
+        "longestStreak": { "type": "integer" },
+        "lastContributionDate": { "type": "string", "maxLength": 20 },
+        "streakBroken": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "challengeId", "currentStreak", "longestStreak", "streakBroken", "updatedAt"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Simulated financial transaction history record.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "challengeId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "txType": { "type": "string", "enum": ["SIMULATED_DEPOSIT", "RESTRICTED_HOLD_TRANSFER", "ILLUSTRATIVE_BONUS_CREDIT", "APPROVED_REFUND_SETTLEMENT"] },
+        "amountInr": { "type": "number" },
+        "simulated": { "type": "boolean" },
+        "referenceId": { "type": "string", "maxLength": 64 },
+        "reconciliationStatus": { "type": "string", "enum": ["RECONCILED", "PENDING_REVIEW"] },
+        "upiApp": { "type": "string", "enum": ["GPAY", "PHONEPE", "PAYTM", "BHIM", "AMAZON_PAY", "OTHER_UPI"] },
+        "upiVpaMasked": { "type": "string", "maxLength": 80 },
+        "description": { "type": "string", "maxLength": 240 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "challengeId", "txType", "amountInr", "simulated", "referenceId", "reconciliationStatus", "description", "createdAt"]
+    },
+    "RestrictedFundsLedger": {
+      "title": "RestrictedFundsLedger",
+      "description": "Separate restricted-funds ledger preserving 100% user ownership for failed challenges.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "challengeId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "principalBalanceInr": { "type": "number" },
+        "ownershipStatus": { "type": "string", "enum": ["USER_OWNED_RESTRICTED", "SETTLED_TO_USER"] },
+        "forfeitureProhibited": { "type": "boolean" },
+        "adminSpendProhibited": { "type": "boolean" },
+        "legalPartnerReviewStatus": { "type": "string", "enum": ["PENDING_LEGAL_PARTNER_REVIEW", "APPROVED_FOR_SETTLEMENT", "SETTLED"] },
+        "reconciliationNote": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "challengeId", "principalBalanceInr", "ownershipStatus", "forfeitureProhibited", "adminSpendProhibited", "legalPartnerReviewStatus", "createdAt", "updatedAt"]
+    },
+    "SettlementRequest": {
+      "title": "SettlementRequest",
+      "description": "Settlement and refund tracking for restricted balances requiring regulated partner approval.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "challengeId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ledgerId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "amountInr": { "type": "number" },
+        "status": { "type": "string", "enum": ["PENDING_LEGAL_PARTNER_REVIEW", "PARTNER_APPROVED", "SETTLED_REFUNDED"] },
+        "legalApprovalRef": { "type": "string", "maxLength": 100 },
+        "partnerBankRef": { "type": "string", "maxLength": 100 },
+        "transactionRef": { "type": "string", "maxLength": 100 },
+        "approvedBy": { "type": "string", "maxLength": 120 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "settledAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "challengeId", "ledgerId", "amountInr", "status", "createdAt"]
+    },
+    "RewardRecord": {
+      "title": "RewardRecord",
+      "description": "One-time illustrative completion bonus record calculated as eligible_savings * rate / 100.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "challengeId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "eligibleSavingsInr": { "type": "number" },
+        "bonusRatePct": { "type": "number" },
+        "bonusAmountInr": { "type": "number" },
+        "illustrativeOnly": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["PROPOSED_ILLUSTRATIVE", "CREDITED_SIMULATED"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "challengeId", "eligibleSavingsInr", "bonusRatePct", "bonusAmountInr", "illustrativeOnly", "status", "createdAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "User-facing savings alerts, streak milestones, and settlement updates.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "maxLength": 140 },
+        "message": { "type": "string", "maxLength": 400 },
+        "category": { "type": "string", "enum": ["DEPOSIT", "STREAK", "CHALLENGE_FAILED", "SETTLEMENT", "REWARD"] },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "title", "message", "category", "read", "createdAt"]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Role-based admin operator registry.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "format": "email", "maxLength": 254 },
+        "role": { "type": "string", "enum": ["COMPLIANCE_ADMIN", "RECONCILIATION_OFFICER", "SUPER_ADMIN"] },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "active", "createdAt"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Immutable compliance and financial action audit log.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "actorUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "actorRole": { "type": "string", "enum": ["USER", "COMPLIANCE_ADMIN", "RECONCILIATION_OFFICER", "SUPER_ADMIN", "SYSTEM"] },
+        "action": { "type": "string", "maxLength": 100 },
+        "entityType": { "type": "string", "maxLength": 60 },
+        "entityId": { "type": "string", "maxLength": 128 },
+        "summary": { "type": "string", "maxLength": 320 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "actorUid", "actorRole", "action", "entityType", "entityId", "summary", "createdAt"]
+    },
+    "PaymentAccount": {
+      "title": "PaymentAccount",
+      "description": "Privacy-masked registered UPI VPA or Indian bank account for simulated deposits and partner-approved settlements.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "accountType": { "type": "string", "enum": ["UPI_VPA", "BANK_ACCOUNT"] },
+        "holderName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "accountLabel": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "upiApp": { "type": "string", "enum": ["GPAY", "PHONEPE", "PAYTM", "BHIM", "AMAZON_PAY", "OTHER_UPI"] },
+        "upiVpaMasked": { "type": "string", "minLength": 5, "maxLength": 80 },
+        "bankName": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "ifscCode": { "type": "string", "minLength": 11, "maxLength": 11, "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$" },
+        "accountNumberMasked": { "type": "string", "minLength": 6, "maxLength": 32 },
+        "accountLast4": { "type": "string", "minLength": 4, "maxLength": 4, "pattern": "^[0-9]{4}$" },
+        "isPrimary": { "type": "boolean" },
+        "simulatedMode": { "type": "boolean" },
+        "verificationStatus": { "type": "string", "enum": ["SIMULATED_VERIFIED", "PENDING_PARTNER_VERIFICATION"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "accountType", "holderName", "accountLabel", "isPrimary", "simulatedMode", "verificationStatus", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Private user account records isolated per user."
+    },
+    "/profiles/{userId}": {
+      "schema": { "$ref": "#/entities/Profile" },
+      "description": "Private user profile and INR schedule preferences."
+    },
+    "/challenges/{challengeId}": {
+      "schema": { "$ref": "#/entities/Challenge" },
+      "description": "Savings challenges owned by a user."
+    },
+    "/dailyContributions/{contributionId}": {
+      "schema": { "$ref": "#/entities/DailyContribution" },
+      "description": "Simulated daily contribution entries linked to a challenge."
+    },
+    "/streaks/{streakId}": {
+      "schema": { "$ref": "#/entities/Streak" },
+      "description": "Streak records per challenge."
+    },
+    "/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/Transaction" },
+      "description": "Simulated transaction records."
+    },
+    "/restrictedFundsLedger/{ledgerId}": {
+      "schema": { "$ref": "#/entities/RestrictedFundsLedger" },
+      "description": "User-owned restricted balance entries created on failed challenges."
+    },
+    "/settlementRequests/{settlementId}": {
+      "schema": { "$ref": "#/entities/SettlementRequest" },
+      "description": "Legal/regulated-partner settlement requests for restricted funds."
+    },
+    "/rewardRecords/{rewardId}": {
+      "schema": { "$ref": "#/entities/RewardRecord" },
+      "description": "Illustrative one-time completion bonus records."
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/Notification" },
+      "description": "User notifications."
+    },
+    "/adminUsers/{adminUid}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Authorized admin role assignments."
+    },
+    "/auditLogs/{auditId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "Immutable compliance and reconciliation audit trail."
+    },
+    "/paymentAccounts/{accountId}": {
+      "schema": { "$ref": "#/entities/PaymentAccount" },
+      "description": "User-owned registered payment accounts (masked UPI VPA or Indian bank account)."
+    }
+  }
+}

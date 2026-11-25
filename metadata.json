@@ -1,0 +1,6 @@
+{
+  "name": "JR13 SAVINGS",
+  "description": "JR13 SAVINGS — Save Daily. Build Your Future. Simulated daily savings challenge platform in INR with streak tracking, restricted-funds ledger, settlement audit trail, and compliance admin console.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
